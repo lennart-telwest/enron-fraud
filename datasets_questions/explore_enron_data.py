@@ -23,7 +23,10 @@ num_persons = 0
 num_features = 0
 num_pois = 0
 
-print enron_data["PRENTICE JAMES"]["total_stock_value"]
+for key in enron_data.iterkeys():
+    print key
+
+#print enron_data["PRENTICE JAMES"]["total_stock_value"]
 
 # for key in enron_data.iterkeys():
 #     if enron_data[key]["poi"] == 1:
