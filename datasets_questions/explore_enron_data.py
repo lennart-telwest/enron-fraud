@@ -34,6 +34,7 @@ num_pois_with_total_payments = 0
 #print enron_data["PRENTICE JAMES"]["total_stock_value"]
 
 for key in enron_data.iterkeys():
+	num_persons += 1
 	if enron_data[key]["poi"] == 1:
 		num_pois += 1
 	if enron_data[key]["salary"] != 'NaN':
@@ -44,7 +45,6 @@ for key in enron_data.iterkeys():
 		num_persons_with_total_payments += 1
 	if enron_data[key]["total_payments"] != 'NaN' and enron_data[key]["poi"] == 1 == 1:
 		num_pois_with_total_payments += 1
- 	num_persons += 1
 
 print 'total number of persons:', num_persons
 print 'num_pois:', num_pois
