@@ -46,6 +46,7 @@ for key in enron_data.iterkeys():
 	if enron_data[key]["total_payments"] != 'NaN' and enron_data[key]["poi"] == 1 == 1:
 		num_pois_with_total_payments += 1
 
+print 'dataset variables:', enron_data["PRENTICE JAMES"]
 print 'total number of persons:', num_persons
 print 'num_pois:', num_pois
 print 'persons with salary:', num_persons_with_salary

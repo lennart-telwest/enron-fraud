@@ -11,3 +11,8 @@ r² ranges between 0 < r² < 1 – the lower r² the less of the output is expla
 | output type | discrete (class labels) | continuous (number) |
 | what are you trying to find? | decision boundary | best fit line |
 | evaluation | accuracy | sum of squared error or r² |
+
+## Outliers handling
+1. Train
+2. Remove points with greatest residual error. (~10%)
+3. Re-Train
