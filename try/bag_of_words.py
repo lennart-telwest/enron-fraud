@@ -1,6 +1,7 @@
 from sklearn.feature_extraction.text import CountVectorizer
 
 vectorizer = CountVectorizer()
+
 string1 = "Hi Katie"
 string2 = "Hi sebastian"
 string3 = "Hi Katie"
