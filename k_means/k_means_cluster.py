@@ -1,6 +1,6 @@
-#!/usr/bin/python 
+#!/usr/bin/python
 
-""" 
+"""
     Skeleton code for k-means clustering mini-project.
 """
 
@@ -14,6 +14,7 @@ import sys
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import MinMaxScaler
 
 
 
@@ -54,15 +55,25 @@ for k, v in data_dict.iteritems():
         if v["salary"] < min_value:
             min_value = v["salary"]
 
-print "max_value: ",max_value
-print "min_value: ",min_value
+print "max_value salary: ",max_value
+print "min_value salary: ",min_value
 
-### there's an outlier--remove it! 
+for k, v in data_dict.iteritems():
+    if v["exercised_stock_options"] != "NaN":
+        if v["exercised_stock_options"] > max_value:
+            max_value = v["exercised_stock_options"]
+        if v["exercised_stock_options"] < min_value:
+            min_value = v["exercised_stock_options"]
+
+print "max_value exercised_stock_options: ",max_value
+print "min_value exercised_stock_options: ",min_value
+
+### there's an outlier--remove it!
 data_dict.pop("TOTAL", 0)
 
 
-### the input features we want to use 
-### can be any key in the person-level dictionary (salary, director_fees, etc.) 
+### the input features we want to use
+### can be any key in the person-level dictionary (salary, director_fees, etc.)
 feature_1 = "salary"
 feature_2 = "exercised_stock_options"
 feature_3 = "total_payments"
@@ -71,9 +82,17 @@ features_list = [poi, feature_1, feature_2, feature_3]
 data = featureFormat(data_dict, features_list )
 poi, finance_features = targetFeatureSplit( data )
 
+##scaling the features with minmax
+
+scaler = MinMaxScaler()
+rescaled_finance_features = scaler.fit_transform(finance_features)
+financial_features_test = numpy.array([200000., 1000000., 0])
+financial_features_test_transformed = scaler.transform(financial_features_test)
+print financial_features_test_transformed
+
 
 ### in the "clustering with 3 features" part of the mini-project,
-### you'll want to change this line to 
+### you'll want to change this line to
 ### for f1, f2, _ in finance_features:
 ### (as it's currently written, the line below assumes 2 features)
 for f1, f2, f3 in finance_features:
