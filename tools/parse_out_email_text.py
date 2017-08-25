@@ -27,7 +27,6 @@ def parseOutText(f):
         ### remove punctuation
         text_string = content[1].translate(string.maketrans("", ""), string.punctuation)
         text_string = text_string.split()
-        print text_string
         ### project part 2: comment out the line below
         # words = text_string
 
@@ -35,9 +34,7 @@ def parseOutText(f):
         ### and append the stemmed word to words (make sure there's a single
         ### space between each stemmed word)
         for word in text_string:
-            print word
             stemmed_word = stemmer.stem(word)
-            print stemmed_word
             words = words + ' ' + stemmed_word
 
 
