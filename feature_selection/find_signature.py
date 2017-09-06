@@ -3,12 +3,13 @@
 import pickle
 import numpy
 numpy.random.seed(42)
-
+from sklearn import tree
+from sklearn.metrics import accuracy_score
 
 ### The words (features) and authors (labels), already largely processed.
 ### These files should have been created from the previous (Lesson 10)
 ### mini-project.
-words_file = "../text_learning/your_word_data.pkl" 
+words_file = "../text_learning/your_word_data.pkl"
 authors_file = "../text_learning/your_email_authors.pkl"
 word_data = pickle.load( open(words_file, "r"))
 authors = pickle.load( open(authors_file, "r") )
@@ -32,12 +33,21 @@ features_test  = vectorizer.transform(features_test).toarray()
 ### a classic way to overfit is to use a small number
 ### of data points and a large number of features;
 ### train on only 150 events to put ourselves in this regime
-features_train = features_train[:150].toarray()
-labels_train   = labels_train[:150]
+# features_train = features_train[:150].toarray()
+# labels_train   = labels_train[:150]
 
 
 
 ### your code goes here
 
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(features_train, labels_train)
+pred = clf.predict(features_test)
+accuracy = accuracy_score(pred, labels_test)
+print("The accuracy score is: " + str(accuracy))
 
-
+print clf.n_features_
+print clf.max_features_
+print clf.feature_importances_
+print clf.n_classes_
+print clf.n_features_
