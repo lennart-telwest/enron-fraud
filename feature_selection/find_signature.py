@@ -26,6 +26,8 @@ features_train, features_test, labels_train, labels_test = cross_validation.trai
 from sklearn.feature_extraction.text import TfidfVectorizer
 vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
                              stop_words='english')
+
+
 features_train = vectorizer.fit_transform(features_train)
 features_test  = vectorizer.transform(features_test).toarray()
 
@@ -33,8 +35,8 @@ features_test  = vectorizer.transform(features_test).toarray()
 ### a classic way to overfit is to use a small number
 ### of data points and a large number of features;
 ### train on only 150 events to put ourselves in this regime
-# features_train = features_train[:150].toarray()
-# labels_train   = labels_train[:150]
+features_train = features_train[:150].toarray()
+labels_train   = labels_train[:150]
 
 
 
@@ -46,8 +48,14 @@ pred = clf.predict(features_test)
 accuracy = accuracy_score(pred, labels_test)
 print("The accuracy score is: " + str(accuracy))
 
-print clf.n_features_
-print clf.max_features_
-print clf.feature_importances_
-print clf.n_classes_
-print clf.n_features_
+print len(features_train)
+
+number_of_feature = 1
+for x in clf.feature_importances_:
+    number_of_feature += 1
+    if x > 0.2:
+        print x
+        print 'the index of the outlier ' + str(number_of_feature)
+        outlier_num = number_of_feature
+
+print vectorizer.get_feature_names()[outlier_num - 1]
