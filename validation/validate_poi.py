@@ -9,11 +9,14 @@
 
     After that, it's not our code anymore--it's yours!
 """
-
 import pickle
 import sys
+from time import time
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 
 data_dict = pickle.load(open("../final_project/final_project_dataset.pkl", "r") )
 
@@ -24,9 +27,23 @@ features_list = ["poi", "salary"]
 
 data = featureFormat(data_dict, features_list)
 labels, features = targetFeatureSplit(data)
+features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.3, random_state=42)
+print features_train
+print labels_test
+print features_test
+print labels_test
 
+### it's all yours from here forward!
 
+### decision tree classifier
+clf = DecisionTreeClassifier()
+t0 = time()
+clf.fit(features_train, labels_train)
+print("training time:", round(time()-t0, 3), "s")
 
-### it's all yours from here forward!  
+t0 = time()
+pred = clf.predict(features_test)
+print("predicting time:", round(time()-t0, 3), "s")
 
-
+accuracy = accuracy_score(pred, labels_test)
+print("The accuracy score is: " + str(accuracy))
