@@ -4,6 +4,9 @@ import sys
 import pickle
 import numpy as np
 from pandas import DataFrame
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import Imputer
+from sklearn.ensemble import ExtraTreesClassifier
 sys.path.append("../tools/")
 
 from feature_format import featureFormat, targetFeatureSplit
@@ -31,24 +34,59 @@ features_dtype = [bool] + [str] + list(np.repeat(float, 19))
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
+
 # converting the data into a data frame
 df = DataFrame.from_dict(data_dict, orient='index')
+
 # reordering the columns
 df = df.ix[:, features_column_names]
+
 # converting the data type
 for i in xrange(len(features_column_names)):
     df[features_column_names[i]] = df[features_column_names[i]].astype(features_dtype[i], errors='ignore')
+
 # Replace missing data with 0
 for f in features_finance:
     df.loc[df[f].isnull(), f] = 0
-### Task 2: Remove outliers
-### Task 3: Create new feature(s)
-### Store to my_dataset for easy export below.
-my_dataset = data_dict
 
-### Extract features and labels from dataset for local testing
-data = featureFormat(my_dataset, features_list, sort_keys = True)
-labels, features = targetFeatureSplit(data)
+"""
+Data Modification
+"""
+# Remove invalid data points
+print df
+df = df[df.index != 'TOTAL']
+df = df[df.index != 'THE TRAVEL AGENCY IN THE PARK']
+
+# Miss-alignment of columns
+df.loc['BELFER ROBERT', features_finance] = \
+    [0, 0, 0, -102500, 0, 0, 0, 3285,
+     102500, 3285, 0, 44093, -44093, 0]
+df.loc['BHATNAGAR SANJAY', features_finance] = \
+    [0, 0, 0, 0, 0, 0, 0, 137864, 0, 137864,
+     15456290, 2604490, -2604490, 15456290]
+print df
+### Task 3: Create new feature(s)
+"""
+Feature Engineering - Ratio of Email
+"""
+df['recieved_from_poi_ratio'] = \
+    df['from_poi_to_this_person'] / df['to_messages']
+df['sent_to_poi_ratio'] = \
+    df['from_this_person_to_poi'] / df['from_messages']
+df['shared_receipt_with_poi_ratio'] = \
+    df['shared_receipt_with_poi'] / df['to_messages']
+
+# Update column definition
+features_email_new = ['recieved_from_poi_ratio', 'sent_to_poi_ratio',
+               'shared_receipt_with_poi_ratio']
+features_all = features_list + features_email_new
+
+"""
+Log-scaling for original features
+"""
+for f in features_all:
+    df[f] = [np.log(abs(v)) if v != 0 else 0 for v in df[f]]
+
 
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
@@ -57,8 +95,17 @@ labels, features = targetFeatureSplit(data)
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
 # Provided to give you a starting point. Try a variety of classifiers.
-from sklearn.naive_bayes import GaussianNB
-clf = GaussianNB()
+pipe = make_pipeline(
+          Imputer(axis=0, copy=True, missing_values='NaN',
+                  strategy='median', verbose=0),
+          ExtraTreesClassifier(bootstrap=False, class_weight='balanced',
+                               criterion='gini', max_depth=None,
+                               max_features='sqrt', max_leaf_nodes=None,
+                               min_samples_leaf=3, min_samples_split=2,
+                               min_weight_fraction_leaf=0.0, n_estimators=30,
+                               n_jobs=-1, oob_score=False,
+                               random_state=20160308, verbose=0,
+                               warm_start=False))
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall
 ### using our testing script. Check the tester.py script in the final project
@@ -67,14 +114,10 @@ clf = GaussianNB()
 ### stratified shuffle split cross validation. For more info:
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
-# Example starting point. Try investigating other evaluation techniques!
-from sklearn.model_selection import train_test_split
-features_train, features_test, labels_train, labels_test = \
-    train_test_split(features, labels, test_size=0.3, random_state=42)
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
 
-dump_classifier_and_data(clf, my_dataset, features_list)
+dump_classifier_and_data(pipe, df.to_dict(orient='index'), ['poi'] + features_all)
