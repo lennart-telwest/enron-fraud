@@ -7,6 +7,7 @@ from pandas import DataFrame
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import Imputer
 from sklearn.ensemble import ExtraTreesClassifier
+import matplotlib.pyplot as plt
 sys.path.append("../tools/")
 
 from feature_format import featureFormat, targetFeatureSplit
@@ -56,10 +57,51 @@ Data Modification
 df = df[df.index != 'TOTAL']
 df = df[df.index != 'THE TRAVEL AGENCY IN THE PARK']
 
+"""
+Basic Exploratory Analysis
+"""
+print(
+"""
+##############################
+Dataset Shape:
+##############################
+
+""")
+print df.shape
+print(
+"""
+
+##############################
+% of missing values:
+##############################
+
+""")
+print df.isnull().sum() / df.shape[0]
+print(
+"""
+
+##############################
+Positional Parameters:
+##############################
+
+""")
+print df.describe()
+print(
+"""
+
+##############################
+Correlation coefficient:
+##############################
+
+""")
+print df.corr()
+
+
 ### Task 3: Create new feature(s)
 """
 Feature Engineering - Ratio of Email
 """
+
 df['recieved_from_poi_ratio'] = \
     df['from_poi_to_this_person'] / df['to_messages']
 df['sent_to_poi_ratio'] = \
@@ -73,8 +115,6 @@ features_email_new = ['recieved_from_poi_ratio', 'sent_to_poi_ratio',
                'shared_receipt_with_poi_ratio']
 features_all = features_list + features_email_new
 
-print(df.describe())
-print(df.plot.hist())
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
 ### Note that if you want to do PCA or other multi-stage operations,
