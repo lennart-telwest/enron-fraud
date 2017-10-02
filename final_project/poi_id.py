@@ -53,18 +53,9 @@ for f in features_finance:
 Data Modification
 """
 # Remove invalid data points
-print df
 df = df[df.index != 'TOTAL']
 df = df[df.index != 'THE TRAVEL AGENCY IN THE PARK']
 
-# Miss-alignment of columns
-df.loc['BELFER ROBERT', features_finance] = \
-    [0, 0, 0, -102500, 0, 0, 0, 3285,
-     102500, 3285, 0, 44093, -44093, 0]
-df.loc['BHATNAGAR SANJAY', features_finance] = \
-    [0, 0, 0, 0, 0, 0, 0, 137864, 0, 137864,
-     15456290, 2604490, -2604490, 15456290]
-print df
 ### Task 3: Create new feature(s)
 """
 Feature Engineering - Ratio of Email
@@ -76,18 +67,14 @@ df['sent_to_poi_ratio'] = \
 df['shared_receipt_with_poi_ratio'] = \
     df['shared_receipt_with_poi'] / df['to_messages']
 
+
 # Update column definition
 features_email_new = ['recieved_from_poi_ratio', 'sent_to_poi_ratio',
                'shared_receipt_with_poi_ratio']
 features_all = features_list + features_email_new
 
-"""
-Log-scaling for original features
-"""
-for f in features_all:
-    df[f] = [np.log(abs(v)) if v != 0 else 0 for v in df[f]]
-
-
+print(df.describe())
+print(df.plot.hist())
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
 ### Note that if you want to do PCA or other multi-stage operations,
