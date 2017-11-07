@@ -21,7 +21,7 @@
   * ICA
 ### 5. Selection
   * KBest
-  * Percentile˘
+  * Percentile
   * Recursive feature elimination
 ### 6. Scaling
   * Mean subtraction
