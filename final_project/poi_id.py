@@ -6,21 +6,10 @@ import numpy as np
 from numpy import mean
 import pandas as pd
 from pandas import DataFrame
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import Imputer
-from sklearn.ensemble import ExtraTreesClassifier
-import seaborn as sns
-import matplotlib.pyplot as plt
-from sklearn.feature_selection import SelectKBest, f_classif, SelectFpr
-from sklearn.decomposition import RandomizedPCA
-from sklearn.naive_bayes import GaussianNB
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
-from sklearn import cross_validation
 sys.path.append("../tools/")
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
+from tester import test_classifier
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -93,7 +82,7 @@ my_dataset = df.to_dict(orient='index')
 
 #Select the labels
 my_feature_list = ['poi'] + features_email + features_finance
-# my_feature_list = ['poi'] + ['sent_to_poi_ratio'] + ['restricted_stock'] + ['exercised_stock_options'] + ['from_poi_to_this_person'] + ['shared_receipt_with_poi'] + ['bonus'] + ['long_term_incentive']
+# my_feature_list = ['poi'] + ['from_poi_to_this_person'] + ['shared_receipt_with_poi'] + ['restricted_stock'] + ['exercised_stock_options'] + ['bonus']
 # print my_feature_list[1]
 
 
@@ -118,38 +107,14 @@ clf = SVC(kernel='rbf', C=2000,gamma = 0.0001,random_state = 42, class_weight = 
 ### stratified shuffle split cross validation. For more info:
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
-# Example starting point. Try investigating other evaluation techniques!
+# For more details about other algorithms used please go to the algorithms
+# section in poi_id.ipynb
 
-def evaluate_clf(clf, features, labels, num_iters=1000, test_size=0.3):
-    print clf
-    accuracy = []
-    precision = []
-    recall = []
-    first = True
-    for trial in range(num_iters):
-        features_train, features_test, labels_train, labels_test =\
-            cross_validation.train_test_split(features, labels, test_size=test_size)
-        clf.fit(features_train, labels_train)
-        predictions = clf.predict(features_test)
-        accuracy.append(accuracy_score(labels_test, predictions))
-        precision.append(precision_score(labels_test, predictions))
-        recall.append(recall_score(labels_test, predictions))
-        if trial % 10 == 0:
-            if first:
-                sys.stdout.write('\nProcessing')
-            sys.stdout.write('.')
-            sys.stdout.flush()
-            first = False
+test_classifier(clf,my_dataset, my_feature_list, folds = 200)
 
-    print "done.\n"
-    print "precision: {}".format(mean(precision))
-    print "recall:    {}".format(mean(recall))
-    return mean(precision), mean(recall)
-
-evaluate_clf(clf, features, labels)
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
 
-dump_classifier_and_data(clf, my_dataset, features_list)
+dump_classifier_and_data(clf, my_dataset, my_feature_list)
